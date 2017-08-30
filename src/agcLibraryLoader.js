@@ -9,17 +9,16 @@
 
         var DEFAULT_LOADER = "Jsapi";
 
-        this.$get = function(loader){
-            return loader;
-        };
-
         this.setLoader = function(loaderName){
-            if ($injector.has(this.getProviderName(loaderName)))
-                this.$get.$inject = [this.getProviderName(loaderName)];
-            else {
+            if (!$injector.has(this.getProviderName(loaderName))) {
                 console.warn("[Angular-GoogleChart] Loader type \"" + loaderName + "\" doesn't exist. Defaulting to JSAPI loader.");
-                this.$get.$inject = [this.getProviderName(DEFAULT_LOADER)];
+
+                loaderName = DEFAULT_LOADER;
             }
+            
+            this.$get = [this.getProviderName(loaderName), function(loader) {
+                return loader;
+            }];
         };
 
         this.getProviderName = function(loaderName){
